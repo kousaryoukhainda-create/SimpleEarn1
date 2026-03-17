@@ -650,9 +650,9 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            ProfileStatCard("5,745", "Total Earned")
-            ProfileStatCard("3,450", "Redeemed")
-            ProfileStatCard("${user?.referralCount ?: 0}", "Referrals")
+            ProfileStatCard("5,745", "Total Earned", modifier = Modifier.weight(1f))
+            ProfileStatCard("3,450", "Redeemed", modifier = Modifier.weight(1f))
+            ProfileStatCard("${user?.referralCount ?: 0}", "Referrals", modifier = Modifier.weight(1f))
         }
         
         Spacer(modifier = Modifier.height(20.dp))
@@ -705,9 +705,13 @@ fun ProfileScreen(
 }
 
 @Composable
-fun ProfileStatCard(value: String, label: String) {
+fun ProfileStatCard(
+    value: String,
+    label: String,
+    modifier: Modifier = Modifier
+) {
     Card(
-        modifier = Modifier.weight(1f),
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
