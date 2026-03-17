@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -54,13 +53,13 @@ fun EarnRewardsApp() {
                     onClick = { selectedTab = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Outlined.ShoppingBag, contentDescription = "Rewards") },
+                    icon = { Icon(Icons.Default.StarBorder, contentDescription = "Rewards") },
                     label = { Text("Rewards", fontSize = 10.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Outlined.Schedule, contentDescription = "History") },
+                    icon = { Icon(Icons.Default.AccessTime, contentDescription = "History") },
                     label = { Text("History", fontSize = 10.sp) },
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 }
