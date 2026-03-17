@@ -1,7 +1,6 @@
 package com.ykapps.simpleearn
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -20,8 +19,6 @@ import androidx.compose.ui.unit.sp
 import com.google.android.gms.ads.MobileAds
 import com.ykapps.simpleearn.ui.theme.SimpleEarnTheme
 
-private const val TAG = "MainActivity"
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +26,6 @@ class MainActivity : ComponentActivity() {
         try {
             // Initialize Mobile Ads
             MobileAds.initialize(this)
-            Log.d(TAG, "MobileAds initialized successfully")
 
             setContent {
                 SimpleEarnTheme {
@@ -37,7 +33,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error in onCreate: ${e.message}", e)
             e.printStackTrace()
         }
     }
@@ -47,86 +42,51 @@ class MainActivity : ComponentActivity() {
 fun EarnRewardsApp() {
     var selectedTab by remember { mutableStateOf(0) }
 
-    try {
-        Scaffold(
-            bottomBar = {
-                NavigationBar(
-                    containerColor = Color.White,
-                    contentColor = Color(0xFF0066FF)
-                ) {
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home", fontSize = 10.sp) },
-                        selected = selectedTab == 0,
-                        onClick = { selectedTab = 0 }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Star, contentDescription = "Earn") },
-                        label = { Text("Earn", fontSize = 10.sp) },
-                        selected = selectedTab == 1,
-                        onClick = { selectedTab = 1 }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Card, contentDescription = "Rewards") },
-                        label = { Text("Rewards", fontSize = 10.sp) },
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Favorite, contentDescription = "History") },
-                        label = { Text("History", fontSize = 10.sp) },
-                        selected = selectedTab == 3,
-                        onClick = { selectedTab = 3 }
-                    )
-                    NavigationBarItem(
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                        label = { Text("Profile", fontSize = 10.sp) },
-                        selected = selectedTab == 4,
-                        onClick = { selectedTab = 4 }
-                    )
-                }
-            }
-        ) { paddingValues ->
-            when (selectedTab) {
-                0 -> HomeScreen(modifier = Modifier.padding(paddingValues))
-                1 -> EarnScreen(modifier = Modifier.padding(paddingValues))
-                2 -> RewardsScreen(modifier = Modifier.padding(paddingValues))
-                3 -> HistoryScreen(modifier = Modifier.padding(paddingValues))
-                4 -> ProfileScreen(modifier = Modifier.padding(paddingValues))
+    Scaffold(
+        bottomBar = {
+            NavigationBar(
+                containerColor = Color.White,
+                contentColor = Color(0xFF0066FF)
+            ) {
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    label = { Text("Home", fontSize = 10.sp) },
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Star, contentDescription = "Earn") },
+                    label = { Text("Earn", fontSize = 10.sp) },
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Card, contentDescription = "Rewards") },
+                    label = { Text("Rewards", fontSize = 10.sp) },
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "History") },
+                    label = { Text("History", fontSize = 10.sp) },
+                    selected = selectedTab == 3,
+                    onClick = { selectedTab = 3 }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                    label = { Text("Profile", fontSize = 10.sp) },
+                    selected = selectedTab == 4,
+                    onClick = { selectedTab = 4 }
+                )
             }
         }
-    } catch (e: Exception) {
-        Log.e(TAG, "Error in EarnRewardsApp: ${e.message}", e)
-        ErrorScreen(e)
-    }
-}
-
-@Composable
-fun ErrorScreen(exception: Exception) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFF8F9FA)),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(16.dp)
-        ) {
-            Text(
-                "⚠️ Error",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFFF3B30)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                exception.message ?: "Unknown error occurred",
-                fontSize = 14.sp,
-                color = Color(0xFF6B7280),
-                modifier = Modifier.padding(8.dp)
-            )
+    ) { paddingValues ->
+        when (selectedTab) {
+            0 -> HomeScreen(modifier = Modifier.padding(paddingValues))
+            1 -> EarnScreen(modifier = Modifier.padding(paddingValues))
+            2 -> RewardsScreen(modifier = Modifier.padding(paddingValues))
+            3 -> HistoryScreen(modifier = Modifier.padding(paddingValues))
+            4 -> ProfileScreen(modifier = Modifier.padding(paddingValues))
         }
     }
 }
