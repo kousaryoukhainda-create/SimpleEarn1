@@ -566,12 +566,16 @@ fun DailyBonusCard(appState: AppState) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .scale(scale),
+            .scale(scale)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(EarningGold, EarningGoldLight)
+                ),
+                shape = RoundedCornerShape(20.dp)
+            ),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Brush.linearGradient(
-                colors = listOf(EarningGold, EarningGoldLight)
-            )
+            containerColor = Color.Transparent
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {

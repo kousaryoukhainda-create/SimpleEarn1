@@ -295,15 +295,20 @@ fun RewardsScreen(
         )
         
         Spacer(modifier = Modifier.height(20.dp))
-        
+
         // Balance Card
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(Primary, PrimaryDark)
+                    ),
+                    shape = RoundedCornerShape(16.dp)
+                ),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = Brush.linearGradient(
-                    colors = listOf(Primary, PrimaryDark)
-                )
+                containerColor = Color.Transparent
             )
         ) {
             Column(
@@ -473,14 +478,14 @@ fun HistoryScreen(
 @Composable
 fun TransactionItem(transaction: com.ykapps.simpleearn.data.Transaction) {
     val (icon, iconBackground, amountColor) = when (transaction.type) {
-        com.ykapps.simpleearn.data.TransactionType.EARNING -> 
-            Icons.Default.AddCircle to Success to Success
-        com.ykapps.simpleearn.data.TransactionType.REDEMPTION -> 
-            Icons.Default.RemoveCircle to Error to Error
-        com.ykapps.simpleearn.data.TransactionType.BONUS -> 
-            Icons.Default.Star to EarningGold to EarningGold
-        com.ykapps.simpleearn.data.TransactionType.REFERRAL -> 
-            Icons.Default.People to Info to Info
+        com.ykapps.simpleearn.data.TransactionType.EARNING ->
+            Triple(Icons.Default.AddCircle, Success, Success)
+        com.ykapps.simpleearn.data.TransactionType.REDEMPTION ->
+            Triple(Icons.Default.RemoveCircle, Error, Error)
+        com.ykapps.simpleearn.data.TransactionType.BONUS ->
+            Triple(Icons.Default.Star, EarningGold, EarningGold)
+        com.ykapps.simpleearn.data.TransactionType.REFERRAL ->
+            Triple(Icons.Default.People, Info, Info)
     }
     
     Card(
