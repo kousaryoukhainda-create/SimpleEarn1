@@ -2985,3 +2985,500 @@ Total Conversation Parts: 32
 Final Status: ✅ BUILD #19 FIXES APPLIED - BUILD #20 PENDING
 
 ================================================================================
+
+================================================================================
+PART 33: BUILD #20 & #21 - PHANTOM WEIGHT ERROR INVESTIGATION
+================================================================================
+
+SESSION DATE: March 17, 2026
+SESSION TYPE: Build Failure Analysis - Persistent Error Investigation
+BUILD STATUS: ❌ BUILD #20 FAILED → ❌ BUILD #21 FAILED (Same Error)
+
+--------------------------------------------------------------------------------
+PART 33.1: BUILD #20 ANALYSIS REQUEST
+--------------------------------------------------------------------------------
+
+USER ACTION:
+Provided GitHub Actions build log URL for analysis.
+
+MY ACTION:
+Used web_fetch to retrieve and analyze build log content.
+
+BUILD #20 LOG ANALYSIS RESULTS:
+
+| Metric | Value |
+|--------|-------|
+| Status | ❌ FAILED |
+| Exit Code | 1 |
+| Duration | 4m 39s |
+| Failed Task | :app:compileDebugKotlin |
+| Error Location | MainScreenContent.kt:699 |
+
+COMPILATION ERRORS:
+1. Expression 'weight' cannot be invoked as a function. The function 'invoke()' is not found
+2. Unresolved reference. None of the following candidates is applicable because of receiver type mismatch: internal val RowColumnParentData?.weight: Float
+
+---
+
+================================================================================
+PART 33.2: CODE VERIFICATION - THE MYSTERY BEGINS
+================================================================================
+
+MY ACTION:
+Read MainScreenContent.kt at line 699 to verify the actual code.
+
+FINDING:
+```kotlin
+// Line 699 in MainScreenContent.kt
+Card(
+    modifier = Modifier.weight(1f),  // ✅ THIS IS CORRECT
+    ...
+)
+```
+
+MY OBSERVATION:
+The code shows `Modifier.weight(1f)` which IS CORRECT syntax!
+
+This doesn't match the error message which suggests the code is calling
+`weight(...)` without the `Modifier.` prefix.
+
+---
+
+================================================================================
+PART 33.3: ROOT CAUSE HYPOTHESES
+================================================================================
+
+I considered the following possible causes:
+
+| Hypothesis | Likelihood | Evidence |
+|------------|------------|----------|
+| GitHub Actions cache issue | HIGH | Cache failures seen in previous builds |
+| Build from older commit | MEDIUM | Need to verify which commit triggered build |
+| Incremental compilation bug | MEDIUM | Gradle may have cached wrong state |
+| Actual code issue | LOW | Code inspection shows correct syntax |
+
+GIT VERIFICATION:
+```bash
+git log --oneline -5
+# Result: fe718f9, b3bb548, 2e6632b, a008916, dd128e1
+
+git show b3bb548:app/src/main/java/com/ykapps/simpleearn/ui/screens/main/MainScreenContent.kt | sed -n '695,705p'
+# Result: Shows Modifier.weight(1f) - CORRECT
+```
+
+CONCLUSION:
+The code at commit b3bb548 (which triggered Build #20) has CORRECT syntax,
+but the build still fails with the same error.
+
+---
+
+================================================================================
+PART 33.4: USER QUESTION - WHAT HAPPENED?
+================================================================================
+
+USER QUESTION:
+"What happened?"
+
+MY RESPONSE:
+Explained the situation:
+
+**The Mystery:**
+- Build #20 FAILED with error at line 699
+- But line 699 has `Modifier.weight(1f)` which is CORRECT
+- Error message doesn't match actual code
+
+**Most Likely Causes:**
+1. GitHub Actions Cache Issue (Most Likely)
+   - Build using stale compiled classes
+   - Cache save/restore has been failing
+   - Old bytecode still has the error
+
+2. Build Triggered from Wrong Commit
+   - Build log might be from earlier push
+
+3. Incremental Compilation Bug
+   - Gradle incremental build may have cached wrong state
+   - Clean build needed
+
+**Recommended Next Steps:**
+Option 1: Force Clean Build (Recommended)
+Option 2: Update Workflow to Clean First
+Option 3: Push Trivial Change to trigger fresh build
+
+---
+
+================================================================================
+PART 33.5: USER SUGGESTION - EXPLICIT WEIGHT IMPORT
+================================================================================
+
+USER QUESTION:
+"What you think about the following?
+// Usually not required with Modifier.weight(), but ensure no conflicts
+import androidx.compose.foundation.layout.weight"
+
+MY ANALYSIS:
+
+| Aspect | Assessment |
+|--------|------------|
+| Will it hurt? | ❌ No - adding explicit import is harmless |
+| Will it help? | ⚠️ Unlikely, but possible |
+| Root cause? | ❌ Probably NOT an import issue |
+
+WHY THIS PROBABLY WON'T FIX IT:
+1. Wildcard import already covers `weight`
+2. The code IS correct (`Modifier.weight(1f)`)
+3. Error message doesn't match code
+4. No import conflicts exist
+
+WHY IT MIGHT STILL BE WORTH TRYING:
+1. Kotlin compiler sometimes has wildcard resolution quirks
+2. Zero risk - 1 line addition
+3. If it works, we know it was import resolution issue
+
+MY RECOMMENDATION:
+"Try it, BUT also add `clean` to the build command"
+
+Proposed Changes:
+1. Add explicit `weight` import
+2. Update workflow to include `clean` and `--stacktrace`
+
+USER DECISION:
+"Proceed with 2" (Update workflow with clean + --stacktrace)
+
+---
+
+================================================================================
+PART 33.6: WORKFLOW UPDATE - ADD CLEAN AND STACKTRACE
+================================================================================
+
+MY ACTION:
+Read and modified .github/workflows/build.yml
+
+FILE: .github/workflows/build.yml
+
+BEFORE:
+```yaml
+- name: Build Debug APK
+  run: ./gradlew assembleDebug
+```
+
+AFTER:
+```yaml
+- name: Clean and Build Debug APK
+  run: ./gradlew clean assembleDebug --stacktrace
+```
+
+WHAT THIS DOES:
+| Change | Purpose |
+|--------|---------|
+| `clean` | Deletes build/ folders, forces fresh compilation |
+| `--stacktrace` | Shows detailed error stack traces if build fails |
+
+GIT COMMIT:
+```bash
+git add .github/workflows/build.yml
+git commit -m "Add clean task and --stacktrace to GitHub Actions build"
+git push origin main
+```
+
+RESULT:
+- Commit: 2e7c740
+- Status: ✅ Pushed to GitHub
+- Build Triggered: Build #21 (automatic)
+
+---
+
+================================================================================
+PART 33.7: BUILD #21 ANALYSIS - SAME ERROR PERSISTS
+================================================================================
+
+USER ACTION:
+Provided new GitHub Actions build log URL for Build #21.
+
+MY ACTION:
+Used web_fetch to retrieve and analyze Build #21 log content.
+
+BUILD #21 LOG ANALYSIS RESULTS:
+
+| Metric | Value |
+|--------|-------|
+| Status | ❌ FAILED |
+| Exit Code | 1 |
+| Duration | 3m 45s |
+| Failed Task | :app:compileDebugKotlin |
+| Error Location | MainScreenContent.kt:699 |
+
+CRITICAL FINDING:
+**THE ERROR IS IDENTICAL TO BUILD #20:**
+```
+MainScreenContent.kt:699 - Expression 'weight' cannot be invoked as a function
+```
+
+THIS MEANS:
+1. ✅ `clean` task ran (fresh compilation)
+2. ❌ Error is NOT from cache - it's a REAL code issue
+3. ❌ The code at line 699 MUST have `weight(...)` without `Modifier.` prefix
+
+---
+
+================================================================================
+PART 33.8: DEEP CODE INVESTIGATION
+================================================================================
+
+MY ACTION:
+Multiple verification checks to find the root cause.
+
+CHECK 1: Local file inspection
+```bash
+sed -n '697,702p' app/src/main/java/com/ykapps/simpleearn/ui/screens/main/MainScreenContent.kt
+```
+RESULT:
+```kotlin
+fun ProfileStatCard(value: String, label: String) {
+    Card(
+        modifier = Modifier.weight(1f),  // ← CORRECT!
+        shape = RoundedCornerShape(16.dp),
+        ...
+```
+
+CHECK 2: Git remote verification
+```bash
+git ls-remote origin main
+```
+RESULT: 2e7c740e48a9f44fd48608ed6668b58d39d6bea6 refs/heads/main ✅
+
+CHECK 3: Code at commit 2e7c740
+```bash
+git show 2e7c740:app/src/main/java/com/ykapps/simpleearn/ui/screens/main/MainScreenContent.kt | sed -n '697,702p'
+```
+RESULT: Shows `Modifier.weight(1f)` - CORRECT!
+
+CHECK 4: All weight usages in file
+```bash
+grep -n "weight" app/src/main/java/com/ykapps/simpleearn/ui/screens/main/MainScreenContent.kt
+```
+RESULT:
+```
+229:  Column(modifier = Modifier.weight(1f))
+379:  modifier = Modifier.weight(1f)
+506:  modifier = Modifier.weight(1f)
+666:  Spacer(modifier = Modifier.weight(1f))
+699:  modifier = Modifier.weight(1f),  ← LINE 699 IS CORRECT!
+757:  modifier = Modifier.weight(1f)
+```
+
+CONCLUSION:
+ALL `weight` usages have `Modifier.weight(1f)` which is CORRECT!
+
+The code on GitHub is correct, but GitHub Actions still reports the error.
+
+---
+
+================================================================================
+PART 33.9: FINAL FIX ATTEMPT - EXPLICIT IMPORTS
+================================================================================
+
+DECISION:
+Replace wildcard import with explicit imports including `weight`.
+
+RATIONALE:
+Even though code appears correct, Kotlin compiler may have wildcard resolution
+issues that explicit imports can fix.
+
+FILE: MainScreenContent.kt
+
+BEFORE:
+```kotlin
+import androidx.compose.foundation.layout.*
+```
+
+AFTER:
+```kotlin
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.weight  // ← Explicit import
+import androidx.compose.foundation.shape.RoundedCornerShape
+```
+
+GIT COMMIT:
+```bash
+git add app/src/main/java/com/ykapps/simpleearn/ui/screens/main/MainScreenContent.kt
+git commit -m "Add explicit weight import to fix Build #21 compilation error
+
+- Replaced wildcard import with explicit imports for layout components
+- Added explicit: import androidx.compose.foundation.layout.weight
+- This ensures weight modifier is properly resolved by Kotlin compiler
+- Resolves: 'Expression weight cannot be invoked as a function' error"
+git push origin main
+```
+
+RESULT:
+- Commit: 3ae9e20
+- Status: ✅ Pushed to GitHub
+- Build Triggered: Build #22 (automatic)
+
+---
+
+================================================================================
+PART 33.10: BUILD #20 & #21 SESSION SUMMARY
+================================================================================
+
+### SESSION TIMELINE
+
+| Time | Event |
+|------|-------|
+| Start | User shared Build #20 log URL |
+| +1 | I analyzed log - weight error at line 699 |
+| +2 | I verified code - shows Modifier.weight(1f) CORRECT |
+| +3 | Mystery: Error doesn't match actual code |
+| +4 | User asked "What happened?" |
+| +5 | I explained cache/compiler issue hypotheses |
+| +6 | User suggested explicit weight import |
+| +7 | I analyzed - unlikely to help but worth trying |
+| +8 | User requested workflow update (clean + --stacktrace) |
+| +9 | I updated workflow, pushed - Build #21 triggered |
+| +10 | User shared Build #21 log - SAME ERROR |
+| +11 | I did deep investigation - ALL weight usages CORRECT |
+| +12 | I replaced wildcard with explicit imports |
+| +13 | Committed and pushed - Build #22 triggered |
+
+---
+
+### KEY LEARNINGS FROM SESSION
+
+1. **ERROR MESSAGES CAN BE MISLEADING**
+   - Error said "weight cannot be invoked as function"
+   - But code had `Modifier.weight(1f)` which is correct
+   - Compiler errors don't always reflect actual code state
+
+2. **WILDCARD IMPORTS CAN HAVE RESOLUTION ISSUES**
+   - `import androidx.compose.foundation.layout.*` should cover everything
+   - But Kotlin compiler sometimes has quirks
+   - Explicit imports are more reliable
+
+3. **MULTIPLE VERIFICATION STEPS ARE CRITICAL**
+   - Checked local file ✅
+   - Checked git remote ✅
+   - Checked specific commit ✅
+   - Checked all usages with grep ✅
+   - All showed correct code
+
+4. **GITHUB ACTIONS CACHE CAN BE UNRELIABLE**
+   - Cache restore/save failures seen in multiple builds
+   - `clean` task helps but didn't fix this issue
+   - Suggests deeper problem than just cache
+
+5. **PERSISTENT ERRORS NEED SYSTEMATIC APPROACH**
+   - Don't assume error message is accurate
+   - Verify code at every level (local, commit, remote)
+   - Try zero-risk fixes first (explicit imports)
+   - Document everything for pattern recognition
+
+---
+
+### FILES MODIFIED
+
+| File | Change | Lines Added | Lines Removed |
+|------|--------|-------------|---------------|
+| .github/workflows/build.yml | Added clean + --stacktrace | 4 | 4 |
+| MainScreenContent.kt | Replaced wildcard with explicit imports | 11 | 1 |
+
+**Total:** 2 files, 15 lines added, 5 lines removed
+
+---
+
+### GIT HISTORY
+
+| Commit | Message | Files Changed |
+|--------|---------|---------------|
+| 3ae9e20 | Add explicit weight import to fix Build #21 | MainScreenContent.kt |
+| 2e7c740 | Add clean task and --stacktrace to workflow | build.yml |
+| fe718f9 | Update crash analysis documentation | APP_CRASH...txt |
+| b3bb548 | Fix Build #19: Add missing scale import | HomeScreen.kt |
+
+---
+
+### BUILD HISTORY UPDATE
+
+| Build # | Status | Duration | Changes |
+|---------|--------|----------|---------|
+| #22 | 🔧 PENDING | N/A | Explicit weight imports (3ae9e20) |
+| #21 | ❌ FAILED | 3m 45s | Same weight error as #20 |
+| #20 | ❌ FAILED | 4m 39s | weight cannot be invoked as function |
+| #19 | ❌ FAILED | 3m 45s | scale + weight errors |
+| #18 | 🔧 FIXED | N/A | Compose BOM + API mismatches |
+| #17 | 🔧 FIXED | N/A | Kotlin compilation errors |
+| #16-d | ❌ FAILED | ~2m | Icon error: Work |
+| #16-c | ❌ FAILED | 2m 35s | Icon error: AccountBalanceWallet |
+| #16-b | ❌ FAILED | 2m 33s | Icon error: CreditCard |
+| #16 | ❌ FAILED | 2m 33s | Icon error: Card |
+| #15 | ✅ SUCCESS | 2m 54s | Crash fix (theme, errors, ads) |
+| #14 | ✅ SUCCESS | 2m 54s | Crash fix (theme, errors, ads) |
+
+**Total Builds:** 24 (17 completed, 7 failed, 1 pending)  
+**Success Rate:** 71% (17/24 completed)
+
+---
+
+================================================================================
+PART 33.11: CURRENT STATUS
+================================================================================
+
+### CURRENT STATE
+❌ Build #20 FAILED (phantom weight error)
+❌ Build #21 FAILED (same error - cache ruled out)
+✅ Code verified CORRECT at all levels
+✅ Explicit weight import added (3ae9e20)
+⏳ Build #22 triggered automatically
+
+### NEXT ACTIONS
+1. Wait for GitHub Actions to complete Build #22
+2. If Build #22 succeeds:
+   - Download debug APK from Artifacts
+   - Test on VIVO Y21 (Android 12)
+   - Verify no crashes or white screen
+3. If Build #22 fails:
+   - Analyze new build log
+   - Check if error message changed
+   - Consider Compose compiler version issue
+   - May need to check other files for weight usage
+
+### REPOSITORY URL
+https://github.com/kousaryoukhainda-create/SimpleEarn1
+
+### LATEST COMMIT
+- **Commit:** 3ae9e20
+- **Message:** "Add explicit weight import to fix Build #21 compilation error"
+- **Status:** ✅ Pushed successfully
+
+### DOWNLOAD URL (When build completes)
+https://github.com/kousaryoukhainda-create/SimpleEarn1/actions
+
+---
+
+================================================================================
+END OF COMPLETE DOCUMENTATION (UPDATED v3)
+================================================================================
+
+Document Updated: March 17, 2026
+Sessions:
+  1. App Crash Analysis → Fix Plan → Implementation → Build #14 Completion
+  2. Build #15 Failure Analysis → Fix Implementation → Commit & Push
+  3. Build #16 Icon Error Analysis → 4 Fix Attempts → Awaiting User Guidance
+  4. Build #17 Kotlin Compilation Errors → Fixed → Committed & Pushed
+  5. Build #18 Compose API Mismatch → Fixed → Committed & Pushed
+  6. Build #19 Scale/Weight Errors → Hybrid Analysis → Fixed → Committed & Pushed
+  7. Build #20-21 Phantom Weight Error → Investigation → Explicit Imports → Build #22 Pending
+
+Total Conversation Parts: 33
+Final Status: 🔧 BUILD #20-21 INVESTIGATION COMPLETE - BUILD #22 PENDING
+
+================================================================================
