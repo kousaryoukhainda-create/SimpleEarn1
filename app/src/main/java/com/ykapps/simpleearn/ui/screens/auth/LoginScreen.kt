@@ -258,14 +258,14 @@ fun LoginScreen(
             )
             
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 SocialButton(Icons.Default.Star, "Google") { /* TODO: Google Login */ }
                 SocialButton(Icons.Default.Person, "Facebook") { /* TODO: Facebook Login */ }
             }
-            
+
             Spacer(modifier = Modifier.height(32.dp))
             
             // Signup Link
