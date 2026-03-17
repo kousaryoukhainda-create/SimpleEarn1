@@ -53,13 +53,13 @@ fun EarnRewardsApp() {
                     onClick = { selectedTab = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Bookmarks, contentDescription = "Rewards") },
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Rewards") },
                     label = { Text("Rewards", fontSize = 10.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.List, contentDescription = "History") },
+                    icon = { Icon(Icons.Default.Info, contentDescription = "History") },
                     label = { Text("History", fontSize = 10.sp) },
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 }
