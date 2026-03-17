@@ -7,7 +7,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CardGiftcard
+import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,31 +53,31 @@ fun EarnRewardsApp() {
                 contentColor = Color(0xFF0066FF)
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                    icon = { Icon(Icons.Filled.Dashboard, contentDescription = "Home") },
                     label = { Text("Home", fontSize = 10.sp) },
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Star, contentDescription = "Earn") },
+                    icon = { Icon(Icons.Filled.AttachMoney, contentDescription = "Earn") },
                     label = { Text("Earn", fontSize = 10.sp) },
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Work, contentDescription = "Rewards") },
+                    icon = { Icon(Icons.Filled.CardGiftcard, contentDescription = "Rewards") },
                     label = { Text("Rewards", fontSize = 10.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = "History") },
+                    icon = { Icon(Icons.Filled.History, contentDescription = "History") },
                     label = { Text("History", fontSize = 10.sp) },
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                    icon = { Icon(Icons.Filled.AccountCircle, contentDescription = "Profile") },
                     label = { Text("Profile", fontSize = 10.sp) },
                     selected = selectedTab == 4,
                     onClick = { selectedTab = 4 }
