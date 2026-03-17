@@ -17,7 +17,7 @@ if [ ! -d "$GRADLE_HOME" ]; then
     echo "Downloading Gradle ${GRADLE_VERSION}..."
     mkdir -p "${APP_HOME}/.gradle/wrapper"
     cd "${APP_HOME}/.gradle/wrapper"
-    
+
     if command -v curl &> /dev/null; then
         curl -# -L -o gradle-${GRADLE_VERSION}-bin.zip "$GRADLE_URL"
     elif command -v wget &> /dev/null; then
@@ -26,10 +26,13 @@ if [ ! -d "$GRADLE_HOME" ]; then
         echo "Error: Neither curl nor wget found. Please install one of them."
         exit 1
     fi
-    
+
     unzip -q gradle-${GRADLE_VERSION}-bin.zip
     rm gradle-${GRADLE_VERSION}-bin.zip
 fi
+
+# Return to project root before running gradle
+cd "$APP_HOME"
 
 # Run gradle
 exec "$GRADLE_HOME/bin/gradle" "$@"
