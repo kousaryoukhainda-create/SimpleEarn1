@@ -7,6 +7,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.extended.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -262,8 +263,8 @@ fun LoginScreen(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                SocialButton(Icons.Default.GMobiledata, "Google") { /* TODO: Google Login */ }
-                SocialButton(Icons.Default.Facebook, "Facebook") { /* TODO: Facebook Login */ }
+                SocialButton(Icons.Extended.GMobiledata, "Google") { /* TODO: Google Login */ }
+                SocialButton(Icons.Extended.Facebook, "Facebook") { /* TODO: Facebook Login */ }
             }
             
             Spacer(modifier = Modifier.height(32.dp))
