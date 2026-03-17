@@ -61,7 +61,7 @@ fun EarnRewardsApp() {
                     onClick = { selectedTab = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.AccountBalanceWallet, contentDescription = "Rewards") },
+                    icon = { Icon(Icons.Default.Work, contentDescription = "Rewards") },
                     label = { Text("Rewards", fontSize = 10.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 }
