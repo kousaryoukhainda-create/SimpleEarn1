@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("kotlin-android")
+    kotlin("plugin.serialization") version "1.9.20"
 }
 
 android {
@@ -84,6 +85,20 @@ dependencies {
 
     // Google Ads
     implementation("com.google.android.gms:play-services-ads:22.6.0")
+    
+    // ExoPlayer for Video Playback
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+    implementation("androidx.media3:media3-common:1.2.0")
+    
+    // Kotlinx Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    
+    // Coil for Image Loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    
+    // DataStore (Preferences)
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
