@@ -1,9 +1,11 @@
 package com.ykapps.simpleearn
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -16,16 +18,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.gms.ads.MobileAds
+import com.ykapps.simpleearn.ui.theme.SimpleEarnTheme
+
+private const val TAG = "MainActivity"
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Initialize Mobile Ads
-        MobileAds.initialize(this)
-        
-        setContent {
-            EarnRewardsApp()
+
+        try {
+            // Initialize Mobile Ads
+            MobileAds.initialize(this)
+            Log.d(TAG, "MobileAds initialized successfully")
+
+            setContent {
+                SimpleEarnTheme {
+                    EarnRewardsApp()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error in onCreate: ${e.message}", e)
+            e.printStackTrace()
         }
     }
 }
@@ -33,52 +46,87 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun EarnRewardsApp() {
     var selectedTab by remember { mutableStateOf(0) }
-    
-    Scaffold(
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                contentColor = Color(0xFF0066FF)
-            ) {
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                    label = { Text("Home", fontSize = 10.sp) },
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Star, contentDescription = "Earn") },
-                    label = { Text("Earn", fontSize = 10.sp) },
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Rewards") },
-                    label = { Text("Rewards", fontSize = 10.sp) },
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Info, contentDescription = "History") },
-                    label = { Text("History", fontSize = 10.sp) },
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                    label = { Text("Profile", fontSize = 10.sp) },
-                    selected = selectedTab == 4,
-                    onClick = { selectedTab = 4 }
-                )
+
+    try {
+        Scaffold(
+            bottomBar = {
+                NavigationBar(
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0066FF)
+                ) {
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
+                        label = { Text("Home", fontSize = 10.sp) },
+                        selected = selectedTab == 0,
+                        onClick = { selectedTab = 0 }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Star, contentDescription = "Earn") },
+                        label = { Text("Earn", fontSize = 10.sp) },
+                        selected = selectedTab == 1,
+                        onClick = { selectedTab = 1 }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Card, contentDescription = "Rewards") },
+                        label = { Text("Rewards", fontSize = 10.sp) },
+                        selected = selectedTab == 2,
+                        onClick = { selectedTab = 2 }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Favorite, contentDescription = "History") },
+                        label = { Text("History", fontSize = 10.sp) },
+                        selected = selectedTab == 3,
+                        onClick = { selectedTab = 3 }
+                    )
+                    NavigationBarItem(
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
+                        label = { Text("Profile", fontSize = 10.sp) },
+                        selected = selectedTab == 4,
+                        onClick = { selectedTab = 4 }
+                    )
+                }
+            }
+        ) { paddingValues ->
+            when (selectedTab) {
+                0 -> HomeScreen(modifier = Modifier.padding(paddingValues))
+                1 -> EarnScreen(modifier = Modifier.padding(paddingValues))
+                2 -> RewardsScreen(modifier = Modifier.padding(paddingValues))
+                3 -> HistoryScreen(modifier = Modifier.padding(paddingValues))
+                4 -> ProfileScreen(modifier = Modifier.padding(paddingValues))
             }
         }
-    ) { paddingValues ->
-        when (selectedTab) {
-            0 -> HomeScreen(modifier = Modifier.padding(paddingValues))
-            1 -> EarnScreen(modifier = Modifier.padding(paddingValues))
-            2 -> RewardsScreen(modifier = Modifier.padding(paddingValues))
-            3 -> HistoryScreen(modifier = Modifier.padding(paddingValues))
-            4 -> ProfileScreen(modifier = Modifier.padding(paddingValues))
+    } catch (e: Exception) {
+        Log.e(TAG, "Error in EarnRewardsApp: ${e.message}", e)
+        ErrorScreen(e)
+    }
+}
+
+@Composable
+fun ErrorScreen(exception: Exception) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF8F9FA)),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                "⚠️ Error",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFFF3B30)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                exception.message ?: "Unknown error occurred",
+                fontSize = 14.sp,
+                color = Color(0xFF6B7280),
+                modifier = Modifier.padding(8.dp)
+            )
         }
     }
 }
@@ -98,9 +146,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A1A1A)
         )
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -123,9 +171,9 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 Text("⭐ Silver Member", color = Color.White, fontSize = 12.sp)
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -171,7 +219,7 @@ fun EarnScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         listOf(
             "Watch Video" to 50,
             "Take Survey" to 150,
@@ -189,6 +237,7 @@ fun TaskCard(title: String, points: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { }
             .padding(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -221,7 +270,7 @@ fun RewardsScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -243,7 +292,7 @@ fun RewardsScreen(modifier: Modifier = Modifier) {
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
 
         listOf(
@@ -262,6 +311,7 @@ fun RewardCard(title: String, value: String, cost: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { }
             .padding(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -346,7 +396,7 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -364,15 +414,15 @@ fun ProfileScreen(modifier: Modifier = Modifier) {
                 Text("⭐ Silver • Member for 37 days", fontSize = 11.sp, color = Color(0xFF0066FF))
             }
         }
-        
+
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         listOf("Edit Profile", "Change Password", "Notifications", "Privacy Policy").forEach {
             SettingItem(it)
         }
-        
+
         Spacer(modifier = Modifier.weight(1f))
-        
+
         Button(
             onClick = {},
             modifier = Modifier.fillMaxWidth(),
@@ -388,6 +438,7 @@ fun SettingItem(title: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { }
             .padding(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
