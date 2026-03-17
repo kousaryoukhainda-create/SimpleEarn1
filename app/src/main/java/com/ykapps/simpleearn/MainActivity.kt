@@ -29,21 +29,16 @@ class MainActivity : ComponentActivity() {
         // Can be added back later with proper error handling if needed
 
         setContent {
-            try {
-                SimpleEarnTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        AppNavigation(
-                            appState = appState,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+            SimpleEarnTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    AppNavigation(
+                        appState = appState,
+                        modifier = Modifier.fillMaxSize()
+                    )
                 }
-            } catch (e: Exception) {
-                Log.e("MainActivity", "Error in app content", e)
-                ErrorScreen(e)
             }
         }
     }
