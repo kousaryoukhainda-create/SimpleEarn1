@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,13 +54,13 @@ fun EarnRewardsApp() {
                     onClick = { selectedTab = 1 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.CardGiftcard, contentDescription = "Rewards") },
+                    icon = { Icon(Icons.Outlined.ShoppingBag, contentDescription = "Rewards") },
                     label = { Text("Rewards", fontSize = 10.sp) },
                     selected = selectedTab == 2,
                     onClick = { selectedTab = 2 }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.History, contentDescription = "History") },
+                    icon = { Icon(Icons.Outlined.Schedule, contentDescription = "History") },
                     label = { Text("History", fontSize = 10.sp) },
                     selected = selectedTab == 3,
                     onClick = { selectedTab = 3 }
@@ -141,7 +142,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 fun StatCard(value: String, label: String) {
     Card(
         modifier = Modifier
-            .weight(1f)
+            .width(100.dp)
             .padding(4.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
@@ -245,11 +246,11 @@ fun RewardsScreen(modifier: Modifier = Modifier) {
         }
         
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         listOf(
-            "Amazon" to "\$5" to 500,
-            "PayPal" to "\$2.5" to 250,
-            "Google Play" to "\$5" to 500
+            Triple("Amazon", "\$5", 500),
+            Triple("PayPal", "\$2.5", 250),
+            Triple("Google Play", "\$5", 500)
         ).forEach { (title, value, cost) ->
             RewardCard(title, value, cost)
             Spacer(modifier = Modifier.height(8.dp))
@@ -295,12 +296,12 @@ fun HistoryScreen(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         listOf(
-            "Daily Check-in" to "+25" to "Mar 15",
-            "Video Watched" to "+50" to "Mar 14",
-            "Survey Completed" to "+150" to "Mar 13",
-            "Amazon Gift Card" to "-500" to "Mar 12"
+            Triple("Daily Check-in", "+25", "Mar 15"),
+            Triple("Video Watched", "+50", "Mar 14"),
+            Triple("Survey Completed", "+150", "Mar 13"),
+            Triple("Amazon Gift Card", "-500", "Mar 12")
         ).forEach { (title, amount, date) ->
             HistoryItem(title, amount, date)
             Spacer(modifier = Modifier.height(8.dp))
