@@ -10,6 +10,14 @@ import com.ykapps.simpleearn.ui.screens.auth.SplashScreen
 import com.ykapps.simpleearn.ui.screens.home.EnhancedHomeScreen
 import com.ykapps.simpleearn.ui.screens.video.VideoPlayerScreen
 
+sealed class Screen {
+    object Splash : Screen()
+    object Login : Screen()
+    object Signup : Screen()
+    object Main : Screen()
+    object VideoPlayer : Screen()
+}
+
 @Composable
 fun AppNavigation(
     appState: AppState,
@@ -18,15 +26,6 @@ fun AppNavigation(
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
     var selectedVideo by remember { mutableStateOf<Video?>(null) }
     var selectedTab by remember { mutableStateOf(0) }
-    
-    // Screen definitions
-    sealed class Screen {
-        object Splash : Screen()
-        object Login : Screen()
-        object Signup : Screen()
-        object Main : Screen()
-        object VideoPlayer : Screen()
-    }
     
     when (val screen = currentScreen) {
         is Screen.Splash -> {

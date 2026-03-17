@@ -31,7 +31,7 @@ fun EnhancedHomeScreen(
 ) {
     val user = appState.currentUser.value
     val balance = appState.currentBalance.value
-    
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -44,31 +44,31 @@ fun EnhancedHomeScreen(
         ) {
             // Header with Gradient
             HeaderSection(user, balance)
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Quick Stats
             QuickStatsSection(user)
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Continue Watching
             ContinueWatchingSection(
                 videos = appState.videos.value.take(3),
                 onVideoClick = onNavigateToVideoPlayer
             )
-            
+
             Spacer(modifier = Modifier.height(20.dp))
-            
+
             // Top Earning Videos
             TopEarningVideosSection(
                 videos = appState.videos.value,
                 onVideoClick = onNavigateToVideoPlayer
             )
-            
+
             Spacer(modifier = Modifier.height(80.dp))
         }
-        
+
         // Daily Bonus Card - Floating
         DailyBonusCard(appState)
     }
@@ -551,28 +551,21 @@ fun VideoGridCard(video: Video, onVideoClick: (Video) -> Unit) {
 @Composable
 fun DailyBonusCard(appState: AppState) {
     var claimed by remember { mutableStateOf(false) }
-    var scale by remember { mutableStateOf(1f) }
-    
-    LaunchedEffect(Unit) {
-        infiniteTransition.apply {
-            animateFloat(
-                initialValue = 1f,
-                targetValue = 1.05f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(1000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Reverse
-                )
-            ) { value ->
-                scale = value
-            }
-        }
-    }
-    
+    val infiniteTransition = rememberInfiniteTransition(label = "bonusPulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-            .align(Alignment.BottomCenter)
             .scale(scale),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
@@ -603,9 +596,9 @@ fun DailyBonusCard(appState: AppState) {
                 ) {
                     Text("🎁", fontSize = 28.sp)
                 }
-                
+
                 Spacer(modifier = Modifier.width(12.dp))
-                
+
                 Column {
                     Text(
                         text = "Daily Bonus",
@@ -620,7 +613,7 @@ fun DailyBonusCard(appState: AppState) {
                     )
                 }
             }
-            
+
             Button(
                 onClick = {
                     if (!claimed) {

@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -23,9 +24,9 @@ fun SplashScreen(
 ) {
     var scale by remember { mutableStateOf(0.5f) }
     var alpha by remember { mutableStateOf(0f) }
-    
+
     LaunchedEffect(true) {
-        // Animate in
+        // Animate scale
         animate(
             initialValue = 0.5f,
             targetValue = 1.2f,
@@ -33,29 +34,30 @@ fun SplashScreen(
                 durationMillis = 800,
                 easing = FastOutSlowInEasing
             )
-        ) { value ->
+        ) { value, _ ->
             scale = value
         }
-        
+
+        // Animate alpha
         animate(
             initialValue = 0f,
             targetValue = 1f,
             animationSpec = tween(durationMillis = 600)
-        ) { value ->
+        ) { value, _ ->
             alpha = value
         }
-        
+
         // Wait then navigate
         kotlinx.coroutines.delay(2000)
-        
+
         animate(
             initialValue = 1f,
             targetValue = 0f,
             animationSpec = tween(durationMillis = 400)
-        ) { value ->
+        ) { value, _ ->
             alpha = value
         }
-        
+
         onSplashComplete()
     }
     
