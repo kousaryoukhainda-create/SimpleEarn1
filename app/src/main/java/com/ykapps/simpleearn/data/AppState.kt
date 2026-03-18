@@ -1,5 +1,6 @@
 package com.ykapps.simpleearn.data
 
+import android.util.Patterns
 import androidx.compose.runtime.mutableStateOf
 import java.util.UUID
 
@@ -185,7 +186,7 @@ class AppState {
     // Auth Functions
     fun login(email: String, password: String): Result<User> {
         // Mock login - accept any valid email format
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return Result.failure(Exception("Invalid email address"))
         }
         if (password.length < 6) {
@@ -205,7 +206,7 @@ class AppState {
     }
     
     fun signup(email: String, password: String, name: String): Result<User> {
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             return Result.failure(Exception("Invalid email address"))
         }
         if (password.length < 6) {
