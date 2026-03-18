@@ -262,30 +262,39 @@ fun SignupScreen(
                     // Signup Button
                     Button(
                         onClick = {
-                            isLoading = true
-                            errorMessage = null
-                            
-                            when {
-                                name.isBlank() -> {
-                                    errorMessage = "Name cannot be empty"
-                                }
-                                password != confirmPassword -> {
-                                    errorMessage = "Passwords do not match"
-                                }
-                                !agreedToTerms -> {
-                                    errorMessage = "You must agree to the terms"
-                                }
-                                else -> {
-                                    val result = appState.signup(email, password, name)
-                                    if (result.isSuccess) {
-                                        onSignupSuccess()
-                                    } else {
-                                        errorMessage = result.exceptionOrNull()?.message
+                            try {
+                                isLoading = true
+                                errorMessage = null
+
+                                when {
+                                    name.isBlank() -> {
+                                        errorMessage = "Name cannot be empty"
+                                    }
+                                    password != confirmPassword -> {
+                                        errorMessage = "Passwords do not match"
+                                    }
+                                    !agreedToTerms -> {
+                                        errorMessage = "You must agree to the terms"
+                                    }
+                                    else -> {
+                                        val result = appState.signup(email, password, name)
+                                        if (result.isSuccess) {
+                                            try {
+                                                onSignupSuccess()
+                                                return@Button
+                                            } catch (navError: Exception) {
+                                                errorMessage = "Navigation failed: ${navError.message}"
+                                            }
+                                        } else {
+                                            errorMessage = result.exceptionOrNull()?.message
+                                        }
                                     }
                                 }
+                            } catch (e: Exception) {
+                                errorMessage = "Unexpected error: ${e.message}"
+                            } finally {
+                                isLoading = false
                             }
-                            
-                            isLoading = false
                         },
                         modifier = Modifier
                             .fillMaxWidth()

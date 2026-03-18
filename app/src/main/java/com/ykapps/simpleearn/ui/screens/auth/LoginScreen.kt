@@ -210,17 +210,26 @@ fun LoginScreen(
                     // Login Button
                     Button(
                         onClick = {
-                            isLoading = true
-                            errorMessage = null
-                            
-                            val result = appState.login(email, password)
-                            if (result.isSuccess) {
-                                onLoginSuccess()
-                            } else {
-                                errorMessage = result.exceptionOrNull()?.message
+                            try {
+                                isLoading = true
+                                errorMessage = null
+
+                                val result = appState.login(email, password)
+                                if (result.isSuccess) {
+                                    try {
+                                        onLoginSuccess()
+                                        return@Button
+                                    } catch (navError: Exception) {
+                                        errorMessage = "Navigation failed: ${navError.message}"
+                                    }
+                                } else {
+                                    errorMessage = result.exceptionOrNull()?.message
+                                }
+                            } catch (e: Exception) {
+                                errorMessage = "Unexpected error: ${e.message}"
+                            } finally {
+                                isLoading = false
                             }
-                            
-                            isLoading = false
                         },
                         modifier = Modifier
                             .fillMaxWidth()
